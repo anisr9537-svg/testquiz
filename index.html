@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="TestQuiz - Free online MCQs, practice tests, past papers and test preparation.">
+<meta name="keywords" content="TestQuiz, online MCQs, PST test, JEST test, STS, Sindh, practice tests, past papers">
+<meta name="robots" content="index, follow">
+<title>TestQuiz - Online MCQs & Test Preparation</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f3f6fb;color:#172033}
+header{background:linear-gradient(135deg,#1769aa,#0b3d91);color:white;padding:22px 16px;text-align:center}
+header h1{margin:0 0 6px;font-size:30px} header p{margin:0;opacity:.9}
+nav{background:white;display:flex;gap:8px;justify-content:center;padding:10px;box-shadow:0 2px 8px #0001;position:sticky;top:0;z-index:5}
+nav button,.btn{border:0;border-radius:8px;padding:10px 15px;background:#1769aa;color:#fff;cursor:pointer;font-weight:bold}
+nav button.secondary{background:#eef3f8;color:#1769aa}
+.container{max-width:900px;margin:22px auto;padding:0 14px}
+.card{background:white;border-radius:14px;padding:20px;margin-bottom:16px;box-shadow:0 4px 18px #0000000d}
+.hero{text-align:center;padding:30px 20px}
+.hero h2{font-size:28px;margin:5px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.subject{padding:18px;border:1px solid #e4e9f0;border-radius:12px;cursor:pointer;background:#fff}
+.subject:hover{border-color:#1769aa;transform:translateY(-2px)}
+.hidden{display:none!important}
+.topbar{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.timer{font-size:20px;font-weight:bold;color:#c62828}
+.qnum{color:#607080;font-weight:bold}
+.question{font-size:21px;font-weight:bold;line-height:1.45;margin:12px 0}
+.option{display:block;width:100%;text-align:left;margin:10px 0;padding:14px;border:2px solid #e1e7ef;border-radius:10px;background:#fff;cursor:pointer;font-size:16px}
+.option:hover{border-color:#1769aa;background:#f5f9ff}
+.option.selected{border-color:#1769aa;background:#e7f1ff}
+.progress{height:9px;background:#e8edf3;border-radius:20px;overflow:hidden;margin:12px 0}
+.progress div{height:100%;background:#1769aa;width:0}
+.actions{display:flex;justify-content:space-between;gap:10px;margin-top:18px}
+.result{text-align:center}.score{font-size:46px;font-weight:bold;color:#1769aa}
+.review{border-left:5px solid #ddd;padding:12px;margin:10px 0;background:#fafafa}
+.correct{border-color:#2e7d32}.wrong{border-color:#c62828}
+footer{text-align:center;padding:30px;color:#667}
+input,select{padding:12px;border:1px solid #ccd5df;border-radius:8px;width:100%;margin:6px 0 12px}
+@media(max-width:600px){header h1{font-size:25px}.question{font-size:18px}.actions button{flex:1}.card{padding:15px}}
+</style>
+</head>
+<body>
+<header>
+<h1>🎯 TestQuiz</h1>
+<p>Online MCQs • Practice Tests • Instant Results</p>
+</header>
+
+<nav>
+<button onclick="showHome()">Home</button>
+<button onclick="showTests()">Tests</button>
+<button onclick="showAbout()" class="secondary">About</button>
+</nav>
+
+<main class="container">
+<section id="home">
+<div class="card hero">
+<h2>🎯 Prepare Smart, Test Better</h2>
+<p>Choose a subject and start your online MCQ test.</p>
+<button class="btn" onclick="showTests()">Start Test</button>
+</div>
+<div class="card">
+<h3>📖 Subjects</h3>
+<div class="grid">
+<div class="subject" onclick="startTest('General Knowledge')">🌍 General Knowledge</div>
+<div class="subject" onclick="startTest('English')">🔤 English</div>
+<div class="subject" onclick="startTest('Science')">🔬 Science</div>
+<div class="subject" onclick="startTest('Maths')">➗ Maths</div>
+<div class="subject" onclick="startTest('Islamiat')">☪️ Islamiat</div>
+<div class="subject" onclick="startTest('Pakistan Studies')">🇵🇰 Pakistan Studies</div>
+</div>
+</div>
+</section>
+
+<section id="tests" class="hidden">
+<div class="card">
+<h2>📝 Select Test</h2>
+<p>Choose a subject to begin.</p>
+<div class="grid" id="testButtons"></div>
+</div>
+</section>
+
+<section id="quiz" class="hidden">
+<div class="card">
+<div class="topbar">
+<span class="qnum" id="qnum"></span>
+<span class="timer">⏱️ <span id="timer">10:00</span></span>
+</div>
+<div class="progress"><div id="progress"></div></div>
+<div id="question"></div>
+<div class="actions">
+<button class="btn" onclick="prevQ()">← Previous</button>
+<button class="btn" onclick="nextQ()">Next →</button>
+</div>
+</div>
+</section>
+
+<section id="result" class="hidden">
+<div class="card result">
+<h2>🎉 Test Completed!</h2>
+<div class="score" id="score"></div>
+<p id="resultText"></p>
+<button class="btn" onclick="showTests()">Take Another Test</button>
+<button class="btn" onclick="showReview()">Review Answers</button>
+</div>
+<div id="review" class="card hidden"></div>
+</section>
+
+<section id="about" class="hidden">
+<div class="card">
+<h2>About TestQuiz</h2>
+<p>TestQuiz is an online MCQ and test preparation platform. You can add your own subjects and questions in the JavaScript section of this file.</p>
+</div>
+</section>
+</main>
+<footer>© 2026 TestQuiz • Made for Online Learning</footer>
+
+<script>
+const bank = {
+"General Knowledge":[
+["When is International Labour Day observed?","May 1","May 2","May 3","June 1",0],
+["How many continents are there?","5","6","7","8",2],
+["What is the capital of Pakistan?","Karachi","Lahore","Islamabad","Peshawar",2],
+["Which is the largest ocean?","Atlantic Ocean","Indian Ocean","Arctic Ocean","Pacific Ocean",3],
+["How many days are there in a leap year?","364","365","366","367",2]
+],
+"English":[
+["Choose the antonym of 'Ancient'.","Old","Modern","Past","Historic",1],
+["Choose the synonym of 'Happy'.","Sad","Angry","Joyful","Weak",2],
+["Which is a noun?","Run","Beautiful","Teacher","Quickly",2],
+["Choose the correct spelling.","Enviroment","Environment","Envirnment","Environmant",1],
+["What is the plural of 'Child'?","Childs","Childes","Children","Childrens",2]
+],
+"Science":[
+["Which planet is known as the Red Planet?","Earth","Mars","Jupiter","Venus",1],
+["What gas do plants absorb from the air?","Oxygen","Nitrogen","Carbon dioxide","Hydrogen",2],
+["How many bones are in an adult human body approximately?","106","206","306","406",1],
+["Water boils at what temperature at sea level?","50°C","75°C","100°C","150°C",2],
+["Which organ pumps blood?","Lungs","Brain","Kidney","Heart",3]
+],
+"Maths":[
+["What is 12 × 8?","86","96","108","112",1],
+["What is 144 ÷ 12?","10","11","12","14",2],
+["What is the square of 9?","18","72","81","90",2],
+["What is 25% of 100?","20","25","50","75",1],
+["What is 15 + 27?","40","41","42","43",2]
+],
+"Islamiat":[
+["How many pillars of Islam are there?","3","4","5","6",2],
+["How many obligatory prayers are offered daily?","3","4","5","6",2],
+["Which is the first month of Islamic calendar?","Ramadan","Muharram","Safar","Rajab",1],
+["How many Surahs are in the Holy Quran?","110","112","114","116",2],
+["Which city is the Kaaba located in?","Madina","Makkah","Taif","Jeddah",1]
+],
+"Pakistan Studies":[
+["Pakistan came into being on:","14 August 1947","15 August 1947","23 March 1940","11 September 1948",0],
+["Who is known as the Founder of Pakistan?","Allama Iqbal","Liaquat Ali Khan","Muhammad Ali Jinnah","Sir Syed Ahmad Khan",2],
+["What is the national language of Pakistan?","Punjabi","Sindhi","Urdu","English",2],
+["Pakistan's national flower is:","Rose","Jasmine","Tulip","Sunflower",1],
+["The first constitution of Pakistan was enforced in:","1956","1962","1973","1949",0]
+]
+};
+
+let questions=[], current=0, answers=[], seconds=600, timerInterval=null, currentSubject="";
+
+function show(id){
+["home","tests","quiz","result","about"].forEach(x=>document.getElementById(x).classList.add("hidden"));
+document.getElementById(id).classList.remove("hidden");
+window.scrollTo(0,0);
+}
+function showHome(){show("home")}
+function showTests(){
+show("tests");
+document.getElementById("testButtons").innerHTML=Object.keys(bank).map(s=>`<button class="btn" onclick="startTest('${s}')">${s}</button>`).join("");
+}
+function showAbout(){show("about")}
+function shuffle(arr){return arr.sort(()=>Math.random()-0.5)}
+function startTest(subject){
+currentSubject=subject;
+questions=bank[subject].map(q=>({q:q[0], options:q.slice(1,5), correct:q[5]}));
+questions=questions.map(item=>{
+let pairs=item.options.map((text,i)=>({text,correct:i===item.correct}));
+shuffle(pairs);
+return {q:item.q,options:pairs.map(x=>x.text),correct:pairs.findIndex(x=>x.correct)};
+});
+current=0; answers=Array(questions.length).fill(null); seconds=600;
+show("quiz"); renderQ(); startTimer();
+}
+function startTimer(){
+clearInterval(timerInterval);
+timerInterval=setInterval(()=>{
+seconds--;
+document.getElementById("timer").textContent=`${String(Math.floor(seconds/60)).padStart(2,"0")}:${String(seconds%60).padStart(2,"0")}`;
+if(seconds<=0){clearInterval(timerInterval);finishTest();}
+},1000);
+}
+function renderQ(){
+let item=questions[current];
+document.getElementById("qnum").textContent=`Question ${current+1} of ${questions.length}`;
+document.getElementById("progress").style.width=((current+1)/questions.length*100)+"%";
+document.getElementById("question").innerHTML=`<div class="question">${escapeHtml(item.q)}</div>`+
+item.options.map((o,i)=>`<button class="option ${answers[current]===i?'selected':''}" onclick="choose(${i})">${String.fromCharCode(65+i)}. ${escapeHtml(o)}</button>`).join("");
+}
+function choose(i){answers[current]=i;renderQ()}
+function nextQ(){if(current<questions.length-1){current++;renderQ()}else finishTest()}
+function prevQ(){if(current>0){current--;renderQ()}}
+function finishTest(){
+clearInterval(timerInterval);
+let score=answers.reduce((n,a,i)=>n+(a===questions[i].correct?1:0),0);
+document.getElementById("score").textContent=`${score}/${questions.length}`;
+document.getElementById("resultText").textContent=`${Math.round(score/questions.length*100)}% — ${currentSubject}`;
+document.getElementById("review").classList.add("hidden");
+show("result");
+}
+function showReview(){
+let score=answers.reduce((n,a,i)=>n+(a===questions[i].correct?1:0),0);
+document.getElementById("review").classList.remove("hidden");
+document.getElementById("review").innerHTML="<h3>📋 Answer Review</h3>"+questions.map((x,i)=>{
+let ok=answers[i]===x.correct;
+return `<div class="review ${ok?'correct':'wrong'}"><b>${i+1}. ${escapeHtml(x.q)}</b><br>Your answer: ${answers[i]===null?'Not answered':escapeHtml(x.options[answers[i]])}<br>Correct answer: <b>${escapeHtml(x.options[x.correct])}</b></div>`;
+}).join("");
+}
+function escapeHtml(s){return s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+showHome();
+</script>
+</body>
+</html>
